@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillUp — Micro-Learning for Professionals</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================
+   CSS VARIABLES & RESET
+============================================ */
+:root {
+  --primary: #7C5CFF;
+  --primary-light: #9B7DFF;
+  --primary-dark: #5B3EDD;
+  --secondary: #4CC9F0;
+  --accent: #FF6584;
+  --accent2: #FFD166;
+  --bg-dark: #080B18;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card2: rgba(255,255,255,0.07);
+  --glass: rgba(124, 92, 255, 0.12);
+  --border: rgba(255,255,255,0.08);
+  --border-glow: rgba(124,92,255,0.4);
+  --text: #F0F2FF;
+  --text-sub: #8B90B8;
+  --text-dim: #555A7A;
+  --green: #06D6A0;
+  --orange: #FF9F1C;
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 40px rgba(124,92,255,0.25);
+  --transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0a0c1a;
+  font-family: var(--font-body);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================
+   PHONE FRAME
+============================================ */
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: var(--bg-dark);
+  border-radius: 52px;
+  border: 2px solid rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,0.04),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 80px rgba(124,92,255,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+/* Dynamic Island */
+.dynamic-island {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 34px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.island-cam {
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  border: 2px solid #2a2a2a;
+}
+.island-light {
+  width: 8px;
+  height: 8px;
+  background: #111;
+  border-radius: 50%;
+}
+
+/* ============================================
+   SCREEN SYSTEM
+============================================ */
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.screen.slide-out {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+/* ============================================
+   SCREEN 1: SPLASH
+============================================ */
+#splash {
+  background: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  cursor: pointer;
+}
+
+.splash-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.splash-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 6s ease-in-out infinite;
+}
+.orb1 { width: 300px; height: 300px; background: rgba(124,92,255,0.35); top: -80px; left: -80px; animation-delay: 0s; }
+.orb2 { width: 250px; height: 250px; background: rgba(76,201,240,0.2); bottom: -60px; right: -60px; animation-delay: -2s; }
+.orb3 { width: 180px; height: 180px; background: rgba(255,101,132,0.2); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -4s; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* Particles */
+.particles { position: absolute; inset: 0; pointer-events: none; }
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  animation: particle-float linear infinite;
+  opacity: 0;
+}
+@keyframes particle-float {
+  0% { transform: translateY(100%) translateX(0); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-100%) translateX(30px); opacity: 0; }
+}
+
+.splash-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.splash-logo-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 16px rgba(124,92,255,0.12), 0 0 60px rgba(124,92,255,0.5);
+  animation: pulse-glow 2.5s ease-in-out infinite;
+  position: relative;
+}
+.splash-logo-ring::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 38px;
+  border: 2px solid rgba(124,92,255,0.3);
+  animation: ring-spin 4s linear infinite;
+}
+@keyframes ring-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 0 0 16px rgba(124,92,255,0.12), 0 0 60px rgba(124,92,255,0.5); }
+  50% { box-shadow: 0 0 0 24px rgba(124,92,255,0.06), 0 0 80px rgba(124,92,255,0.7); }
+}
+
+.splash-logo-icon { font-size: 48px; }
+
+.splash-brand { font-family: var(--font-display); font-size: 42px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, #fff 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.splash-tagline { font-size: 15px; color: var(--text-sub); text-align: center; line-height: 1.6; max-width: 220px; }
+.splash-tagline strong { color: var(--primary-light); font-weight: 600; }
+
+.splash-tap {
+  margin-top: 60px;
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+/* ============================================
+   SCREEN 2: ONBOARDING
+============================================ */
+#onboarding {
+  background: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  height: 844px;
+}
+
+.ob-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(124,92,255,0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(76,201,240,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ob-skip {
+  position: absolute;
+  top: 58px;
+  right: 24px;
+  font-size: 13px;
+  color: var(--text-sub);
+  cursor: pointer;
+  z-index: 10;
+  padding: 6px 14px;
+  background: var(--bg-card2);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+.ob-skip:hover { color: var(--text); background: var(--glass); }
+
+.ob-slides { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+
+.ob-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.ob-slide.active { opacity: 1; transform: translateX(0); }
+.ob-slide.prev { opacity: 0; transform: translateX(-40%); }
+
+.ob-illustration {
+  width: 260px;
+  height: 220px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+/* Illustration 1 */
+.ill-1 .rocket {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 16px;
+  box-shadow: 0 0 40px rgba(124,92,255,0.5);
+  animation: float 3s ease-in-out infinite;
+}
+.ill-1 .cards {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.ill-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--text-sub);
+  backdrop-filter: blur(10px);
+}
+.ill-card strong { display: block; color: var(--text); font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+
+/* Illustration 2 */
+.ill-2 { text-align: center; }
+.ill-2 .timer-ring {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ill-2 .timer-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ill-2 .timer-text { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text); }
+.ill-2 .timer-text span { font-size: 11px; color: var(--text-sub); display: block; font-family: var(--font-body); }
+.ill-2 .lesson-cards { display: flex; flex-direction: column; gap: 8px; }
+.lesson-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.lc-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.lc-icon.purple { background: rgba(124,92,255,0.2); }
+.lc-icon.blue { background: rgba(76,201,240,0.2); }
+.lc-icon.green { background: rgba(6,214,160,0.2); }
+.lc-info strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); }
+.lc-info span { font-size: 10px; color: var(--text-sub); }
+
+/* Illustration 3 */
+.ill-3 .cert-card {
+  background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(76,201,240,0.1));
+  border: 1px solid rgba(124,92,255,0.3);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+.cert-badge { font-size: 40px; margin-bottom: 8px; }
+.cert-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.cert-sub { font-size: 11px; color: var(--text-sub); margin-bottom: 12px; }
+.cert-stars { color: var(--accent2); font-size: 16px; letter-spacing: 2px; }
+.ill-3 .xp-bars { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.xp-row { display: flex; align-items: center; gap: 10px; }
+.xp-label { font-size: 11px; color: var(--text-sub); width: 60px; text-align: right; flex-shrink: 0; }
+.xp-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.xp-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--primary), var(--secondary)); animation: grow-bar 1.5s ease forwards; }
+@keyframes grow-bar { from { width: 0; } }
+
+.ob-headline { font-family: var(--font-display); font-size: 28px; font-weight: 800; text-align: center; line-height: 1.2; margin-bottom: 12px; }
+.ob-desc { font-size: 15px; color: var(--text-sub); text-align: center; line-height: 1.65; }
+
+.ob-footer {
+  padding: 24px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.ob-dots { display: flex; gap: 8px; align-items: center; }
+.ob-dot {
+  height: 8px;
+  border-radius: 10px;
+  background: var(--border);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.ob-dot.active { width: 28px; background: var(--primary); }
+.ob-dot:not(.active) { width: 8px; }
+
+.btn-primary {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(124,92,255,0.4);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  border-radius: inherit;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,92,255,0.5); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ============================================
+   SCREEN 3: LOGIN
+============================================ */
+#login {
+  background: var(--bg-dark);
+  padding: 60px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  min-height: 844px;
+}
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 10%, rgba(124,92,255,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 90%, rgba(76,201,240,0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.login-header { margin-bottom: 32px; position: relative; z-index: 1; }
+.login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.login-logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 16px rgba(124,92,255,0.4);
+}
+.login-logo-text { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+
+.login-title { font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.login-sub { font-size: 14px; color: var(--text-sub); }
+
+.social-btns { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; position: relative; z-index: 1; }
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
+.social-btn:hover {
+  border-color: var(--border-glow);
+  background: var(--glass);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(124,92,255,0.2);
+}
+.social-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+.google-icon { background: #fff; color: #4285F4; }
+.linkedin-icon { background: #0077B5; color: #fff; }
+.social-btn span:last-child { margin-left: auto; color: var(--text-dim); font-size: 12px; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+
+.form-group { margin-bottom: 16px; position: relative; z-index: 1; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  overflow: hidden;
+}
+.input-wrap:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124,92,255,0.15);
+  background: rgba(124,92,255,0.05);
+}
+.input-icon { padding: 0 14px; color: var(--text-dim); font-size: 16px; }
+.input-wrap input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 16px 0;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+.input-wrap input::placeholder { color: var(--text-dim); }
+.input-suffix { padding: 0 14px; cursor: pointer; color: var(--text-dim); font-size: 16px; transition: color 0.2s; }
+.input-suffix:hover { color: var(--text); }
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+.remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.toggle-switch {
+  width: 40px; height: 22px;
+  background: var(--border);
+  border-radius: 20px;
+  position: relative;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+.toggle-switch.on { background: var(--primary); }
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.toggle-switch.on .toggle-knob { transform: translateX(18px); }
+.remember-label { font-size: 13px; color: var(--text-sub); }
+.forgot-link { font-size: 13px; color: var(--primary-light); cursor: pointer; }
+
+.biometric-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-sub);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: var(--transition);
+  position: relative;
+  z-index: 1;
+}
+.biometric-btn:hover { border-color: var(--border-glow); color: var(--text); background: var(--glass); }
+
+.login-footer { text-align: center; font-size: 13px; color: var(--text-sub); position: relative; z-index: 1; }
+.login-footer a { color: var(--primary-light); cursor: pointer; font-weight: 600; }
+
+/* ============================================
+   SCREEN 4: DASHBOARD
+============================================ */
+#dashboard {
+  background: var(--bg-dark);
+  padding-bottom: 90px;
+  min-height: 844px;
+}
+
+.dash-header {
+  padding: 58px 24px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.dash-greeting { flex: 1; }
+.dash-greeting-text { font-size: 13px; color: var(--text-sub); margin-bottom: 2px; }
+.dash-name { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.dash-right { display: flex; align-items: center; gap: 12px; }
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,159,28,0.15);
+  border: 1px solid rgba(255,159,28,0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.notif-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+.notif-btn:hover { background: var(--glass); border-color: var(--border-glow); }
+.notif-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 16px; height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-dark);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid rgba(124,92,255,0.4);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.avatar:hover { box-shadow: 0 0 20px rgba(124,92,255,0.4); }
+
+/* Search */
+.search-bar {
+  margin: 0 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.search-bar:hover { border-color: var(--border-glow); background: var(--glass); }
+.search-icon { font-size: 18px; color: var(--text-dim); }
+.search-text { flex: 1; font-size: 14px; color: var(--text-dim); }
+.voice-icon { font-size: 16px; color: var(--primary-light); }
+
+/* Hero Banner */
+.hero-banner {
+  margin: 0 24px 24px;
+  background: linear-gradient(135deg, rgba(124,92,255,0.3) 0%, rgba(76,201,240,0.2) 100%);
+  border: 1px solid rgba(124,92,255,0.3);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.hero-banner:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(124,92,255,0.3), transparent 70%);
+  border-radius: 50%;
+}
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,101,132,0.2);
+  border: 1px solid rgba(255,101,132,0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.hero-title { font-family: var(--font-display); font-size: 20px; font-weight: 800; line-height: 1.3; margin-bottom: 8px; }
+.hero-desc { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.5; }
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.hero-cta:hover { background: rgba(255,255,255,0.25); }
+
+.banner-dots { display: flex; gap: 6px; margin-top: 16px; }
+.banner-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: var(--transition); }
+.banner-dot.active { width: 20px; border-radius: 10px; background: #fff; }
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 0 24px 24px;
+}
+.stat-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--glass), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.stat-card:hover { transform: translateY(-2px); border-color: var(--border-glow); box-shadow: 0 8px 24px rgba(124,92,255,0.15); }
+.stat-card:hover::before { opacity: 1; }
+.stat-icon { font-size: 22px; margin-bottom: 10px; }
+.stat-value { font-family: var(--font-display); font-size: 24px; font-weight: 800; margin-bottom: 2px; }
+.stat-label { font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.stat-progress { margin-top: 12px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.stat-fill { height: 100%; border-radius: 10px; animation: grow-bar 1.5s ease forwards; }
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-bottom: 16px;
+}
+.section-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+.section-link { font-size: 13px; color: var(--primary-light); cursor: pointer; }
+
+/* Category Chips */
+.categories {
+  display: flex;
+  gap: 10px;
+  padding: 0 24px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.categories::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-sub);
+}
+.chip.active, .chip:hover {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(124,92,255,0.3);
+}
+
+/* Course Cards */
+.courses-scroll {
+  display: flex;
+  gap: 16px;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 24px;
+}
+.courses-scroll::-webkit-scrollbar { display: none; }
+
+.course-card {
+  flex-shrink: 0;
+  width: 200px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.course-card:hover { transform: translateY(-4px); border-color: var(--border-glow); box-shadow: 0 12px 32px rgba(124,92,255,0.2); }
+
+.course-thumb {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  position: relative;
+  overflow: hidden;
+}
+.thumb-gradient { position: absolute; inset: 0; }
+
+.course-body { padding: 14px; }
+.course-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.course-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.course-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.course-rating { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--accent2); }
+.course-duration { font-size: 11px; color: var(--text-dim); }
+.course-instructor { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.inst-avatar { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+.inst-name { font-size: 11px; color: var(--text-sub); }
+.course-actions { display: flex; gap: 8px; }
+.btn-continue {
+  flex: 1;
+  padding: 9px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+.btn-continue:hover { opacity: 0.9; }
+.btn-bookmark {
+  width: 34px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.btn-bookmark:hover { background: rgba(255,213,102,0.15); border-color: rgba(255,213,102,0.3); }
+
+/* Bottom Nav */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(8,11,24,0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 12px 8px 24px;
+  display: flex;
+  justify-content: space-around;
+  z-index: 100;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  min-width: 56px;
+}
+.nav-item:hover { background: var(--glass); }
+.nav-icon { font-size: 20px; transition: var(--transition); }
+.nav-label { font-size: 10px; color: var(--text-dim); font-weight: 600; transition: var(--transition); }
+.nav-item.active .nav-icon { filter: drop-shadow(0 0 8px var(--primary)); }
+.nav-item.active .nav-label { color: var(--primary-light); }
+
+/* ============================================
+   SCREEN 5: COURSE DETAIL
+============================================ */
+#course-detail {
+  background: var(--bg-dark);
+  min-height: 844px;
+  padding-bottom: 90px;
+}
+
+.course-hero {
+  height: 220px;
+  background: linear-gradient(135deg, rgba(124,92,255,0.4), rgba(76,201,240,0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-size: 72px;
+}
+.course-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-dark));
+}
+.course-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(124,92,255,0.3), transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(76,201,240,0.2), transparent 60%);
+}
+
+.hero-top-btns {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  right: 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+}
+.hero-btn {
+  width: 38px;
+  height: 38px;
+  background: rgba(8,11,24,0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: var(--transition);
+}
+.hero-btn:hover { background: rgba(124,92,255,0.3); }
+.hero-btn-group { display: flex; gap: 8px; }
+
+.play-btn-overlay {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition);
+  animation: pulse-glow 2s infinite;
+}
+.play-btn-overlay:hover { transform: scale(1.1); background: rgba(124,92,255,0.4); }
+
+.cd-body { padding: 0 24px; }
+
+.cd-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; margin: 16px 0 8px; line-height: 1.3; }
+
+.cd-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.meta-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.meta-rating { background: rgba(255,213,102,0.15); color: var(--accent2); border: 1px solid rgba(255,213,102,0.25); }
+.meta-students { background: rgba(76,201,240,0.15); color: var(--secondary); border: 1px solid rgba(76,201,240,0.25); }
+.meta-duration { background: rgba(6,214,160,0.15); color: var(--green); border: 1px solid rgba(6,214,160,0.25); }
+.meta-level { background: rgba(255,101,132,0.15); color: var(--accent); border: 1px solid rgba(255,101,132,0.25); }
+
+.instructor-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+.inst-big-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 2px solid rgba(124,92,255,0.3);
+  flex-shrink: 0;
+}
+.inst-info strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.inst-info span { font-size: 12px; color: var(--text-sub); }
+.inst-follow {
+  margin-left: auto;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
+  color: var(--primary-light);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  font-family: var(--font-body);
+}
+.inst-follow:hover { background: var(--glass); }
+
+/* Progress */
+.progress-section {
+  background: linear-gradient(135deg, rgba(124,92,255,0.12), rgba(76,201,240,0.08));
+  border: 1px solid rgba(124,92,255,0.2);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.progress-circle {
+  width: 72px;
+  height: 72px;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.progress-circle svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.progress-circle-text { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); }
+.progress-circle-sub { font-size: 9px; color: var(--text-sub); text-align: center; }
+.progress-info { flex: 1; }
+.progress-info strong { font-family: var(--font-display); font-size: 15px; font-weight: 700; display: block; margin-bottom: 4px; }
+.progress-info span { font-size: 12px; color: var(--text-sub); display: block; margin-bottom: 10px; }
+.progress-bar-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 35%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px; }
+
+/* Modules */
+.modules-section { margin-bottom: 24px; }
+.module-item {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.module-item:hover { border-color: var(--border-glow); }
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+.module-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+}
+.module-num.done { background: rgba(6,214,160,0.2); color: var(--green); }
+.module-num.active { background: rgba(124,92,255,0.2); color: var(--primary-light); }
+.module-num.locked { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+.module-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
+.module-name span { display: block; font-size: 11px; color: var(--text-sub); font-weight: 400; margin-top: 2px; }
+.module-check { font-size: 16px; }
+
+.module-content {
+  padding: 0 16px 16px 62px;
+  display: none;
+}
+.module-content.open { display: block; }
+.module-lesson {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.module-lesson:hover { padding-left: 4px; }
+.lesson-type { font-size: 14px; }
+.lesson-name { flex: 1; font-size: 13px; color: var(--text-sub); }
+.lesson-duration { font-size: 11px; color: var(--text-dim); }
+
+/* CTA Section */
+.cta-section { margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
+.btn-secondary {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius);
+  color: var(--primary-light);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-secondary:hover { background: var(--glass); }
+
+/* ============================================
+   UTILITY
+============================================ */
+.gradient-text { background: linear-gradient(135deg, var(--primary-light), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.text-green { color: var(--green); }
+.text-orange { color: var(--orange); }
+
+/* Scrollable dashboard bg */
+#dashboard { overflow-y: auto; overflow-x: hidden; }
+#course-detail { overflow-y: auto; overflow-x: hidden; }
+
+/* Desktop context */
+@media (min-width: 600px) {
+  body { background: #04060f; }
+}
+</style>
+</head>
+<body>
+
+<!-- PHONE FRAME -->
+<div class="phone-frame">
+
+  <!-- Dynamic Island -->
+  <div class="dynamic-island">
+    <div class="island-cam"></div>
+    <div class="island-light"></div>
+  </div>
+
+  <!-- ==================== SCREEN 1: SPLASH ==================== -->
+  <div class="screen active" id="splash" onclick="goTo('onboarding')">
+    <div class="splash-bg">
+      <div class="splash-orb orb1"></div>
+      <div class="splash-orb orb2"></div>
+      <div class="splash-orb orb3"></div>
+      <!-- Particles -->
+      <div class="particles" id="particles"></div>
+    </div>
+    <div class="splash-content">
+      <div class="splash-logo-ring">
+        <span class="splash-logo-icon">⚡</span>
+      </div>
+      <div class="splash-brand">SkillUp</div>
+      <div class="splash-tagline">Learn <strong>smarter</strong> in just<br/><strong>15 minutes</strong> a day.</div>
+    </div>
+    <div class="splash-tap">Tap anywhere to start →</div>
+  </div>
+
+  <!-- ==================== SCREEN 2: ONBOARDING ==================== -->
+  <div class="screen" id="onboarding">
+    <div class="ob-bg"></div>
+    <div class="ob-skip" onclick="goTo('login')">Skip</div>
+
+    <div class="ob-slides">
+      <!-- Slide 1 -->
+      <div class="ob-slide active" id="ob-slide-1">
+        <div class="ob-illustration ill-1">
+          <div class="rocket">🚀</div>
+          <div class="cards">
+            <div class="ill-card"><strong>UX Design</strong>4.9 ⭐ · 2h 30m</div>
+            <div class="ill-card"><strong>AI & ML</strong>4.8 ⭐ · 3h 15m</div>
+          </div>
+        </div>
+        <div class="ob-headline">Upgrade your career<br/><span class="gradient-text">anywhere.</span></div>
+        <div class="ob-desc">Access premium micro-courses curated for professionals. Learn on your commute, lunch break, or anytime.</div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="ob-slide" id="ob-slide-2">
+        <div class="ob-illustration ill-2">
+          <div class="timer-ring">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#timerGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="175 264"/>
+              <defs>
+                <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#7C5CFF"/>
+                  <stop offset="100%" stop-color="#4CC9F0"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="timer-text">15<span>min</span></div>
+          </div>
+          <div class="lesson-cards">
+            <div class="lesson-card">
+              <div class="lc-icon purple">🎥</div>
+              <div class="lc-info"><strong>Video Lesson</strong><span>5 min · HD Quality</span></div>
+            </div>
+            <div class="lesson-card">
+              <div class="lc-icon blue">📝</div>
+              <div class="lc-info"><strong>Quick Quiz</strong><span>3 min · 5 Questions</span></div>
+            </div>
+            <div class="lesson-card">
+              <div class="lc-icon green">✅</div>
+              <div class="lc-info"><strong>Practice Exercise</strong><span>7 min · Apply Skills</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-headline">Short lessons for<br/><span class="gradient-text">busy people.</span></div>
+        <div class="ob-desc">Each module is crafted to fit your schedule. No fluff, just focused learning that delivers real results.</div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="ob-slide" id="ob-slide-3">
+        <div class="ob-illustration ill-3">
+          <div class="cert-card">
+            <div class="cert-badge">🏆</div>
+            <div class="cert-title">UI/UX Design Mastery</div>
+            <div class="cert-sub">Awarded to — Budi Santoso</div>
+            <div class="cert-stars">★★★★★</div>
+          </div>
+          <div class="xp-bars">
+            <div class="xp-row">
+              <span class="xp-label">Design</span>
+              <div class="xp-bar"><div class="xp-fill" style="width:85%"></div></div>
+            </div>
+            <div class="xp-row">
+              <span class="xp-label">Strategy</span>
+              <div class="xp-bar"><div class="xp-fill" style="width:60%; animation-delay:.2s"></div></div>
+            </div>
+            <div class="xp-row">
+              <span class="xp-label">Research</span>
+              <div class="xp-bar"><div class="xp-fill" style="width:72%; animation-delay:.4s"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-headline">Track progress &<br/><span class="gradient-text">earn certificates.</span></div>
+        <div class="ob-desc">Visualize your growth with detailed analytics and earn shareable certificates recognized by top companies.</div>
+      </div>
+    </div>
+
+    <div class="ob-footer">
+      <div class="ob-dots">
+        <div class="ob-dot active" onclick="setSlide(0)"></div>
+        <div class="ob-dot" onclick="setSlide(1)"></div>
+        <div class="ob-dot" onclick="setSlide(2)"></div>
+      </div>
+      <button class="btn-primary" id="ob-btn" onclick="obNext()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 3: LOGIN ==================== -->
+  <div class="screen" id="login">
+    <div class="login-bg"></div>
+
+    <div class="login-header">
+      <div class="login-logo">
+        <div class="login-logo-icon">⚡</div>
+        <span class="login-logo-text">SkillUp</span>
+      </div>
+      <div class="login-title">Welcome<br/>back 👋</div>
+      <div class="login-sub">Sign in to continue your learning journey</div>
+    </div>
+
+    <div class="social-btns">
+      <div class="social-btn" onclick="goTo('dashboard')">
+        <div class="social-icon google-icon">G</div>
+        <span>Continue with Google</span>
+        <span>Recommended</span>
+      </div>
+      <div class="social-btn" onclick="goTo('dashboard')">
+        <div class="social-icon linkedin-icon">in</div>
+        <span>Continue with LinkedIn</span>
+      </div>
+    </div>
+
+    <div class="divider"><span>or sign in with email</span></div>
+
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <div class="input-wrap">
+        <span class="input-icon">📧</span>
+        <input type="email" placeholder="you@company.com"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" placeholder="Enter password" id="pass-input"/>
+        <span class="input-suffix" onclick="togglePass()">👁</span>
+      </div>
+    </div>
+
+    <div class="login-options">
+      <div class="remember-me" onclick="toggleRemember()">
+        <div class="toggle-switch" id="remember-toggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="remember-label">Remember me</span>
+      </div>
+      <span class="forgot-link">Forgot password?</span>
+    </div>
+
+    <button class="btn-primary" onclick="goTo('dashboard')" style="margin-bottom:16px;position:relative;z-index:1;">Sign In</button>
+
+    <div class="biometric-btn">
+      <span>🔐</span>
+      <span>Sign in with Face ID / Fingerprint</span>
+    </div>
+
+    <div class="login-footer">
+      Don't have an account? <a onclick="goTo('dashboard')">Create Account →</a>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 4: DASHBOARD ==================== -->
+  <div class="screen" id="dashboard">
+
+    <!-- Header -->
+    <div class="dash-header">
+      <div class="dash-greeting">
+        <div class="dash-greeting-text">Good morning ☀️</div>
+        <div class="dash-name">Budi Santoso</div>
+      </div>
+      <div class="dash-right">
+        <div class="streak-badge">🔥 12</div>
+        <div class="notif-btn" onclick="">🔔<div class="notif-badge">3</div></div>
+        <div class="avatar">BS</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <span class="search-text">Search courses, topics...</span>
+      <span class="voice-icon">🎙️</span>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-label">🔴 LIVE · Webinar Today</div>
+      <div class="hero-title">Master UI/UX Design<br/>in 2025</div>
+      <div class="hero-desc">Join 2,400+ professionals upgrading their design skills with senior mentors.</div>
+      <div class="hero-cta" onclick="goTo('course-detail')">Explore Course →</div>
+      <div class="banner-dots">
+        <div class="banner-dot active"></div>
+        <div class="banner-dot"></div>
+        <div class="banner-dot"></div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="section-header">
+      <div class="section-title">Your Progress</div>
+      <div class="section-link">See all</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value gradient-text">24h</div>
+        <div class="stat-label">Learning Hours</div>
+        <div class="stat-progress"><div class="stat-fill" style="width:72%;background:linear-gradient(90deg,#7C5CFF,#4CC9F0)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-value gradient-text">5</div>
+        <div class="stat-label">Certificates</div>
+        <div class="stat-progress"><div class="stat-fill" style="width:60%;background:linear-gradient(90deg,#FF6584,#FFD166)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value text-green">+35%</div>
+        <div class="stat-label">Weekly Growth</div>
+        <div class="stat-progress"><div class="stat-fill" style="width:35%;background:linear-gradient(90deg,#06D6A0,#4CC9F0)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value text-orange">12</div>
+        <div class="stat-label">Day Streak</div>
+        <div class="stat-progress"><div class="stat-fill" style="width:85%;background:linear-gradient(90deg,#FF9F1C,#FF6584)"></div></div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section-header">
+      <div class="section-title">Categories</div>
+    </div>
+    <div class="categories">
+      <div class="chip active">All</div>
+      <div class="chip">UI/UX</div>
+      <div class="chip">Business</div>
+      <div class="chip">AI & ML</div>
+      <div class="chip">Marketing</div>
+      <div class="chip">Finance</div>
+      <div class="chip">Design</div>
+    </div>
+
+    <!-- Course Cards -->
+    <div class="section-header">
+      <div class="section-title">Recommended</div>
+      <div class="section-link">See all</div>
+    </div>
+    <div class="courses-scroll">
+
+      <div class="course-card" onclick="goTo('course-detail')">
+        <div class="course-thumb">
+          <div class="thumb-gradient" style="background:linear-gradient(135deg,rgba(124,92,255,0.5),rgba(76,201,240,0.4))"></div>
+          🎨
+        </div>
+        <div class="course-body">
+          <div class="course-category" style="color:#9B7DFF">UI/UX Design</div>
+          <div class="course-name">Advanced UX Research Methods</div>
+          <div class="course-meta">
+            <div class="course-rating">⭐ 4.9</div>
+            <div class="course-duration">⏱ 8h 20m</div>
+          </div>
+          <div class="course-instructor">
+            <div class="inst-avatar">AS</div>
+            <div class="inst-name">Andi Susanto</div>
+          </div>
+          <div class="course-actions">
+            <button class="btn-continue">Continue</button>
+            <div class="btn-bookmark">🔖</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-thumb">
+          <div class="thumb-gradient" style="background:linear-gradient(135deg,rgba(6,214,160,0.4),rgba(76,201,240,0.3))"></div>
+          🤖
+        </div>
+        <div class="course-body">
+          <div class="course-category" style="color:#4CC9F0">AI & Machine Learning</div>
+          <div class="course-name">Prompt Engineering for Business</div>
+          <div class="course-meta">
+            <div class="course-rating">⭐ 4.8</div>
+            <div class="course-duration">⏱ 6h 45m</div>
+          </div>
+          <div class="course-instructor">
+            <div class="inst-avatar" style="background:linear-gradient(135deg,#06D6A0,#4CC9F0)">RW</div>
+            <div class="inst-name">Rizki Wijaya</div>
+          </div>
+          <div class="course-actions">
+            <button class="btn-continue" style="background:linear-gradient(135deg,#06D6A0,#4CC9F0)">Start</button>
+            <div class="btn-bookmark">🔖</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-thumb">
+          <div class="thumb-gradient" style="background:linear-gradient(135deg,rgba(255,101,132,0.4),rgba(255,213,102,0.3))"></div>
+          📊
+        </div>
+        <div class="course-body">
+          <div class="course-category" style="color:#FF9F1C">Business Strategy</div>
+          <div class="course-name">Product Management Fundamentals</div>
+          <div class="course-meta">
+            <div class="course-rating">⭐ 4.7</div>
+            <div class="course-duration">⏱ 10h</div>
+          </div>
+          <div class="course-instructor">
+            <div class="inst-avatar" style="background:linear-gradient(135deg,#FF9F1C,#FF6584)">MP</div>
+            <div class="inst-name">Maya Putri</div>
+          </div>
+          <div class="course-actions">
+            <button class="btn-continue" style="background:linear-gradient(135deg,#FF9F1C,#FF6584)">Start</button>
+            <div class="btn-bookmark">🔖</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🔭</div>
+        <div class="nav-label">Explore</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">📚</div>
+        <div class="nav-label">My Courses</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">💬</div>
+        <div class="nav-label">Community</div>
+      </div>
+      <div class="nav-item" onclick="goTo('login')">
+        <div class="nav-icon">👤</div>
+        <div class="nav-label">Profile</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== SCREEN 5: COURSE DETAIL ==================== -->
+  <div class="screen" id="course-detail">
+
+    <div class="course-hero">
+      <div class="course-hero-bg"></div>
+      <div class="hero-top-btns">
+        <div class="hero-btn" onclick="goBack()">←</div>
+        <div class="hero-btn-group">
+          <div class="hero-btn">🔖</div>
+          <div class="hero-btn">📤</div>
+        </div>
+      </div>
+      <div class="play-btn-overlay">▶</div>
+      🎨
+    </div>
+
+    <div class="cd-body">
+      <div class="cd-title">Advanced UX Research Methods — From Theory to Practice</div>
+
+      <div class="cd-meta">
+        <div class="meta-badge meta-rating">⭐ 4.9 · 2,840 reviews</div>
+        <div class="meta-badge meta-students">👥 12.4k students</div>
+        <div class="meta-badge meta-duration">⏱ 8h 20m</div>
+        <div class="meta-badge meta-level">📶 Intermediate</div>
+      </div>
+
+      <div class="instructor-row">
+        <div class="inst-big-avatar">👨‍💻</div>
+        <div class="inst-info">
+          <strong>Andi Susanto</strong>
+          <span>Senior UX Designer at Tokopedia</span>
+        </div>
+        <button class="inst-follow">+ Follow</button>
+      </div>
+
+      <!-- Progress Tracker -->
+      <div class="progress-section">
+        <div class="progress-circle">
+          <svg viewBox="0 0 100 100" width="72" height="72">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="url(#progGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="88 251"/>
+            <defs>
+              <linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#7C5CFF"/>
+                <stop offset="100%" stop-color="#4CC9F0"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div>
+            <div class="progress-circle-text">35%</div>
+            <div class="progress-circle-sub">done</div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <strong>Keep going! 🎯</strong>
+          <span>3 of 9 modules completed</span>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <div class="section-header" style="padding:0;margin-bottom:16px">
+        <div class="section-title">Course Modules</div>
+        <div class="section-link">9 modules</div>
+      </div>
+
+      <div class="modules-section">
+        <div class="module-item" onclick="toggleModule(this)">
+          <div class="module-header">
+            <div class="module-num done">✓</div>
+            <div class="module-name">Introduction to UX Research <span>4 lessons · 35 min · Completed</span></div>
+            <div class="module-check">✅</div>
+          </div>
+          <div class="module-content open">
+            <div class="module-lesson">
+              <span class="lesson-type">🎥</span>
+              <span class="lesson-name">What is UX Research?</span>
+              <span class="lesson-duration">8 min</span>
+            </div>
+            <div class="module-lesson">
+              <span class="lesson-type">📝</span>
+              <span class="lesson-name">Research Methods Overview</span>
+              <span class="lesson-duration">10 min</span>
+            </div>
+            <div class="module-lesson">
+              <span class="lesson-type">🎯</span>
+              <span class="lesson-name">Quick Quiz</span>
+              <span class="lesson-duration">5 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-item" onclick="toggleModule(this)">
+          <div class="module-header">
+            <div class="module-num active">2</div>
+            <div class="module-name">User Interviews & Surveys <span>5 lessons · 48 min · In Progress</span></div>
+            <div class="module-check">▶️</div>
+          </div>
+          <div class="module-content">
+            <div class="module-lesson">
+              <span class="lesson-type">🎥</span>
+              <span class="lesson-name">Designing Interview Questions</span>
+              <span class="lesson-duration">12 min</span>
+            </div>
+            <div class="module-lesson">
+              <span class="lesson-type">📋</span>
+              <span class="lesson-name">Survey Best Practices</span>
+              <span class="lesson-duration">9 min</span>
+            </div>
+            <div class="module-lesson">
+              <span class="lesson-type">🔧</span>
+              <span class="lesson-name">Hands-on Exercise</span>
+              <span class="lesson-duration">15 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-item">
+          <div class="module-header">
+            <div class="module-num locked">🔒</div>
+            <div class="module-name">Usability Testing Methods <span>6 lessons · 55 min · Locked</span></div>
+            <div class="module-check">🔒</div>
+          </div>
+        </div>
+
+        <div class="module-item">
+          <div class="module-header">
+            <div class="module-num locked">🔒</div>
+            <div class="module-name">Data Analysis & Synthesis <span>4 lessons · 42 min · Locked</span></div>
+            <div class="module-check">🔒</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="cta-section">
+        <button class="btn-primary" style="font-family:var(--font-body);font-size:15px;" onclick="goTo('dashboard')">▶ Continue Lesson</button>
+        <button class="btn-secondary">🏆 Download Certificate</button>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('dashboard')">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🔭</div>
+        <div class="nav-label">Explore</div>
+      </div>
+      <div class="nav-item active">
+        <div class="nav-icon">📚</div>
+        <div class="nav-label">My Courses</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">💬</div>
+        <div class="nav-label">Community</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">👤</div>
+        <div class="nav-label">Profile</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================
+     JAVASCRIPT
+============================================ -->
+<script>
+/* ---- Screen Navigation ---- */
+let currentScreen = 'splash';
+let history = ['splash'];
+
+function goTo(id) {
+  const current = document.getElementById(currentScreen);
+  const next = document.getElementById(id);
+  if (!next || id === currentScreen) return;
+
+  current.classList.add('slide-out');
+  setTimeout(() => {
+    current.classList.remove('active', 'slide-out');
+  }, 400);
+
+  next.style.transform = 'translateX(100%)';
+  next.classList.add('active');
+  setTimeout(() => {
+    next.style.transform = '';
+  }, 20);
+
+  history.push(id);
+  currentScreen = id;
+}
+
+function goBack() {
+  if (history.length < 2) return;
+  history.pop();
+  const prev = history[history.length - 1];
+  const current = document.getElementById(currentScreen);
+  const prevEl = document.getElementById(prev);
+
+  current.classList.remove('active');
+  prevEl.classList.add('active');
+  currentScreen = prev;
+}
+
+/* ---- Onboarding ---- */
+let obCurrent = 0;
+const obSlides = ['ob-slide-1', 'ob-slide-2', 'ob-slide-3'];
+
+function setSlide(idx) {
+  document.getElementById(obSlides[obCurrent]).classList.remove('active');
+  document.getElementById(obSlides[obCurrent]).classList.add('prev');
+  setTimeout(() => document.getElementById(obSlides[obCurrent]).classList.remove('prev'), 500);
+
+  obCurrent = idx;
+  document.getElementById(obSlides[obCurrent]).classList.add('active');
+
+  // Update dots
+  document.querySelectorAll('.ob-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === obCurrent);
+  });
+
+  // Update button
+  const btn = document.getElementById('ob-btn');
+  btn.textContent = obCurrent === 2 ? 'Get Started 🚀' : 'Continue →';
+}
+
+function obNext() {
+  if (obCurrent < 2) {
+    setSlide(obCurrent + 1);
+  } else {
+    goTo('login');
+  }
+}
+
+/* ---- Login Interactions ---- */
+function togglePass() {
+  const input = document.getElementById('pass-input');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function toggleRemember() {
+  const toggle = document.getElementById('remember-toggle');
+  toggle.classList.toggle('on');
+}
+
+/* ---- Module Accordion ---- */
+function toggleModule(el) {
+  const content = el.querySelector('.module-content');
+  if (!content) return;
+  const isOpen = content.classList.contains('open');
+  document.querySelectorAll('.module-content.open').forEach(c => c.classList.remove('open'));
+  if (!isOpen) content.classList.add('open');
+}
+
+/* ---- Particles ---- */
+(function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+    p.style.opacity = Math.random() * 0.5;
+    container.appendChild(p);
+  }
+})();
+
+/* ---- Chip interaction ---- */
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ---- Nav item interaction ---- */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const parentNav = this.closest('.bottom-nav');
+    parentNav.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ---- Bookmark animation ---- */
+document.querySelectorAll('.btn-bookmark').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    this.style.transform = 'scale(1.3)';
+    this.textContent = '🔖';
+    setTimeout(() => this.style.transform = '', 200);
+  });
+});
+
+/* ---- Banner dots ---- */
+document.querySelectorAll('.banner-dot').forEach((dot, i) => {
+  dot.addEventListener('click', function() {
+    document.querySelectorAll('.banner-dot').forEach(d => d.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
